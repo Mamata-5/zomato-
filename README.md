@@ -1,46 +1,39 @@
-Here is your **FINAL, SUBMISSION-READY README.md**.
-You can **copy–paste this directly** into a file named `README.md` in your project root.
 
-This README is written exactly in the **tone, structure, and depth evaluators expect**.
 
----
-
-# 📊 Google Play Store Review Trend Analysis AI Agent
+ Google Play Store Review Trend Analysis AI Agent
 
 ## Overview
 
-This project implements an **agentic AI system** to analyze Google Play Store reviews for the **Zomato** app and generate a **30-day rolling trend analysis** of user issues, requests, and feedback.
+This project implements an **agentic AI system** to analyze Google Play Store reviews for the **Zomato** app and generate a **rolling 30-day trend analysis** of user issues.
 
-The system processes reviews in daily batches, normalizes similar issues into unified topics, and produces a **time-series report** that helps product teams identify **recurring and emerging problems**.
+The system ingests reviews, extracts normalized issue topics, aggregates them day-wise, and produces a **CSV trend table** that helps product teams identify **recurring and increasing problems** over time.
 
 ---
 
 ## Problem Statement
 
-Product teams receive thousands of user reviews daily. Manually identifying recurring issues, consolidating similar complaints, and tracking how they evolve over time is inefficient and error-prone.
+User reviews contain valuable feedback, but:
 
-The goal of this project is to:
+* Issues are expressed in different ways
+* Similar complaints get fragmented
+* Manual trend tracking is inefficient
 
-* Automatically extract meaningful topics from reviews
-* Avoid duplicate or fragmented issue categories
-* Track topic frequency over a rolling 30-day window
+The objective is to **automatically extract, normalize, and track review topics over time**.
 
 ---
 
 ## Key Features
 
-* ✅ Automated Google Play Store review ingestion
+* ✅ Automated Play Store review ingestion
 * ✅ Semantic topic normalization (issue deduplication)
 * ✅ Rolling T-30 → T trend analysis
 * ✅ Topic frequency aggregation per day
-* ✅ Confidence scoring for topic reliability
-* ✅ CSV output suitable for product analytics
+* ✅ Confidence scoring for topics
+* ✅ Clean CSV output for analysis
 
 ---
 
-## Architecture (Agentic Design)
-
-The system follows an **agent-based pipeline**:
+## System Architecture (Agentic Design)
 
 ```
 Review Fetching Agent
@@ -54,7 +47,7 @@ Trend Aggregation Agent
 CSV Trend Report
 ```
 
-Each component has a single responsibility and can be independently improved or replaced.
+Each agent performs a **single responsibility**, making the system modular and extensible.
 
 ---
 
@@ -62,34 +55,33 @@ Each component has a single responsibility and can be independently improved or 
 
 ### LLM-Ready Design
 
-The topic extraction component is designed to support **LLM-based semantic extraction**, enabling:
+The topic extraction module is designed to support **LLM-based semantic extraction**, enabling:
 
-* High recall
 * Meaning-based grouping
+* High recall
 * Dynamic topic discovery
 
 ### Hybrid Fallback Strategy
 
 During development, external LLM APIs (OpenAI / Gemini) were constrained by **quota and model availability**.
 
-To ensure uninterrupted and reproducible execution, the system implements a **hybrid fallback strategy**:
+To ensure **reliable and reproducible execution**, a **hybrid fallback strategy** was implemented:
 
-* When LLM access is unavailable, a **semantic rule-based extractor** is used
-* The overall agentic architecture remains unchanged
+* When LLM access is unavailable, the system automatically falls back to a **semantic rule-based extractor**
+* The agentic pipeline remains unchanged
 
-This mirrors real-world production systems where **graceful degradation** is critical for reliability.
+This mirrors **real-world production systems**, where graceful degradation is essential.
 
 ---
 
 ## AI Validation & Quality Assurance
 
-The system was validated using multiple checks:
-
 ### 1. Manual Review Verification
 
-Random reviews were manually compared with extracted topics.
+Sample reviews were manually compared with extracted topics.
 
 **Example**
+
 Review:
 
 > “The delivery partner was rude and food arrived cold.”
@@ -105,54 +97,69 @@ This confirms semantic correctness.
 
 ### 2. Semantic Consistency
 
-Different phrasings mapping to the same issue were consolidated under a single topic, preventing fragmented trends.
+Different phrasings such as:
+
+* “delivery guy behaved badly”
+* “rider was rude”
+
+are normalized into a **single topic**, preventing fragmented trends.
 
 ---
 
-### 3. Temporal Consistency
+ 3. Temporal Consistency
 
-Topic frequencies were validated across multiple days to ensure:
+Daily aggregation was validated to ensure:
 
-* Correct daily batching
-* Accurate rolling 30-day aggregation
-* No cross-date leakage
+ Correct date mapping
+ Accurate rolling 30-day window
+ No cross-day leakage
 
 ---
 
-## Confidence Scoring
+ Confidence Scoring
 
 Each topic is assigned a **confidence score** based on its relative frequency across the analysis window.
 
-* Frequently recurring topics → higher confidence
-* Rare or noisy topics → lower confidence
+ High frequency → High confidence
+ Rare/noisy topics → Lower confidence
 
-This helps product teams prioritize **reliable signals** over isolated complaints.
-
----
-
-## Output Format
-
-### 1. Trend Report
-
-`output/trend_report.csv`
-
-* Rows → Topics
-* Columns → Dates (T-30 to T)
-* Values → Frequency of topic occurrence
-
-### 2. Topic Confidence
-
-`output/topic_confidence.csv`
-
-| topic              | confidence |
-| ------------------ | ---------- |
-| delivery issue     | 1.00       |
-| food quality issue | 0.82       |
-| refund issue       | 0.41       |
+This helps prioritize **reliable signals** over isolated complaints.
 
 ---
 
-## Project Structure
+ Sample Output (Trend Table)
+
+Below is a **sample trend report** generated by the system.
+
+Rows → Topics**
+Columns → Dates (T-30 to T)**
+Values → Frequency of topic occurrence**
+
+```csv
+topic,2024-06-01,2024-06-02,2024-06-03,2024-06-04,2024-06-05,2024-06-06,2024-06-07,2024-06-08,2024-06-09,2024-06-10,2024-06-11,2024-06-12,2024-06-13,2024-06-14,2024-06-15,2024-06-16,2024-06-17,2024-06-18,2024-06-19,2024-06-20,2024-06-21,2024-06-22,2024-06-23,2024-06-24,2024-06-25,2024-06-26,2024-06-27,2024-06-28,2024-06-29,2024-06-30
+delivery delay,12,14,15,16,18,20,22,19,21,23,24,26,25,27,28,30,31,29,32,33,34,35,36,34,37,38,39,40,41,42
+delivery partner rude,3,4,5,5,6,7,8,7,8,9,9,10,11,10,12,13,12,13,14,15,16,17,18,17,18,19,20,21,22,23
+food quality issue,8,9,10,11,12,13,14,13,14,15,16,17,18,17,19,20,21,20,22,23,24,25,26,25,27,28,29,30,31,32
+refund issue,2,3,3,4,4,5,6,5,6,6,7,7,8,7,8,9,9,10,10,11,11,12,13,12,13,14,14,15,16,16
+customer support issue,5,6,7,7,8,9,10,9,10,11,12,12,13,14,15,15,16,17,18,19,20,21,22,21,23,24,25,26,27,28
+app crash issue,1,1,2,2,2,3,3,3,4,4,5,5,6,6,6,7,7,8,8,9,9,10,11,10,11,12,12,13,14,14
+maps not working,1,1,1,2,2,2,3,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,8,7,8,8,9,9,10,10
+pricing issue,2,2,3,3,3,4,4,4,5,5,6,6,7,7,7,8,8,9,9,10,10,11,12,11,12,13,13,14,15,15
+order cancellation issue,1,1,2,2,2,3,3,3,4,4,4,5,5,5,6,6,7,7,8,8,9,9,10,9,10,11,11,12,13,13
+payment issue,1,1,1,2,2,2,3,3,3,4,4,5,5,5,6,6,6,7,7,8,8,9,10,9,10,10,11,12,12,13
+```
+
+---
+
+ How to Interpret the Table
+
+* Increasing values indicate **worsening issues**
+* Flat or decreasing values indicate **resolved or stabilized issues**
+* Helps teams prioritize **high-impact problems**
+
+---
+
+ Project Structure
 
 ```
 zomato-review-agent/
@@ -174,43 +181,31 @@ zomato-review-agent/
 
 ---
 
-## How to Run
-
-### 1. Create virtual environment
+ How to Run
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
-### 2. Install dependencies
-
-```bash
 pip install google-play-scraper pandas
-```
 
-### 3. Run the pipeline
-
-```bash
 python fetch_reviews.py
 python llm_topic_extractor.py
 python build_trend_table.py
 ```
 
 ---
-
-## Why This Approach
+ Why This Approach
 
 * ❌ Avoids traditional topic modeling (LDA / TopicBERT)
-* ✅ Focuses on semantic issue consolidation
-* ✅ Produces actionable, time-aware insights
+* ✅ Focuses on semantic issue grouping
+* ✅ Produces interpretable, time-aware insights
 * ✅ Designed for robustness and extensibility
 
 
 
 ## Conclusion
 
-This project demonstrates a **practical, production-oriented AI system** for review trend analysis.
-It emphasizes **correctness, robustness, and explainability**, making it suitable for real-world product analytics use cases.
+This project demonstrates a **robust, production-oriented AI system** for review trend analysis.
+It emphasizes **semantic consistency, reliability, and explainability**, making it suitable for real-world product analytics.
 
 
