@@ -1,0 +1,6 @@
+services:
+  zomatoreviewagent:
+    image: zomatoreviewagent
+    build:
+      context: .
+      dockerfile: ./Dockerfile
